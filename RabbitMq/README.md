@@ -5,7 +5,7 @@
 
 ### 核心概念
 
-![](rabbitmq .png)
+![](rabbitmq.png)
 
 #### Connection（连接）
 
