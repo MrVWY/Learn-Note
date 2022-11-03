@@ -1,5 +1,5 @@
 # Learn-Note
-学习笔记
+整理一下以前的学习笔记......
 - [go-泛型](https://github.com/MrVWY/Learn-Note/tree/main/go-generics)
 - [K8s](https://github.com/MrVWY/Learn-Note/tree/main/k8s)
 - [RabbitMq](https://github.com/MrVWY/Learn-Note/tree/main/RabbitMq)
