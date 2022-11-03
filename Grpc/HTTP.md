@@ -45,5 +45,6 @@ HTTP/1.1中增加了持久连接的方法，它的特点是在一个TCP连接上
 #### 设置请求优先级
 &ensp;&ensp;设置数据帧的优先级，让服务端先处理重要资源
 
-
-
+### HTTPS
+&ensp;&ensp; HTTPS = HTTP + TLS/SSL
+&ensp;&ensp; 看图->httpsflow.png、certificateauthority.png

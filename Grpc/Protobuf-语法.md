@@ -116,3 +116,44 @@ service SearchService {
     message Project {...}
     map<string, Project> projects = 1;
 ```
+
+### 1.1.6 package和option go_package  
+- package：用于proto,在引用时起作用
+```protobuf
+// file enumx.proto
+
+syntax = "proto3";
+
+package demo1;
+option go_package = "github.com/wymli/bc_sns/dep/pb/go/enumx;enumx";
+
+enum E {
+  E_UNSPECIFIED = 0;
+  FILE = 1;
+}
+```
+```protobuf
+// file biz.proto
+
+syntax = "proto3";
+
+package demo2;
+// 这里的option go_package其实可以随便写,因为不会被别人引用,不过还是按规范来吧
+option go_package = "github.com/wymli/bc_sns/dep/pb/go/biz;biz";
+import "enumx.proto";
+
+//引用enumx.proto中的结构体E
+message S {
+  demo1.E content_type = 1;
+}
+```
+```go
+// file biz.pb.go
+package biz
+
+import (
+	enumx "github.com/wymli/bc_sns/dep/pb/go/enumx"
+    .....
+)
+```
+- option go_package：用于生成的.pb.go文件,在引用时和生成go包名时起作用
