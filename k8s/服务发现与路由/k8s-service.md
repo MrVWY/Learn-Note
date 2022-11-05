@@ -2,30 +2,59 @@
 
 ### Service(svc)
 
-​	在 Kubernetes 集群中，每个 Node 运行一个 kube-proxy 进程。kube-proxy 负责为 Service 实现了一种 VIP（虚拟 IP）的形式。
-
-​	每个Node节点上都运行着一个kube-proxy服务进程。当创建Service的时候会通过api-server向etcd写入创建的service的信息，而kube-proxy会基于监听的机制发现这种Service的变动，然后它会将最新的Service信息转换成对应的访问规则。
-
-​	service通过label和slector标签与pod建立关联。
-
-#### 使用场景
-
-- 当客户端想要访问K8S集群中的pod时，需要知道pod的ip以及端口，那K8S中如何在不知道pod的地址信息的情况下进行pod服务的快速连接？
-
-
-- 若某一node上的pod发生故障，K8S最大的特点就是能够给感知和重启该pod，但是pod重启后ip会发生变化，那么客户端如何感知并保持对pod的访问？
-
-
-- 如果多个pod组合在一起形成pod组，如何在被访问时达到负载均衡的效果？
-
-#### 具体的作用和场景如下
-
-- 通过Pod的Label Selector访问Pod组。
-- Service的IP保持不变（Headless Servcie除外），保证了访问接口的稳定性，屏蔽了Pod的IP地址变化带来的影响，进而实现解耦合。虽然这样，还是建议使用ServiceName进行访问。
+- 发现后端pod服务
+- 为一组具有相同功能的容器应用提供一个统一的入口地址
+- 将请求进行负载分发到后端的各个容器应用上的控制器
+- service通过label和slector标签与pod建立关联。
 
 #### 工作机制
 
+##### 含有selector
 
+例如，假定有一组 `Pod`，它们对外暴露了 9376 端口，同时还被打上 `"app=MyApp"` 标签
+
+```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: MyApp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+```
+
+上述配置的含义
+
+1. 将创建一个名称为 “my-service” 的 `Service` 对象，它会将请求代理到 9376 TCP 端口，具有标签 `"app=MyApp"` 的 `Pod` 上
+2. 同时`Service` 将被指派一个 IP 地址（通常称为 “Cluster IP”），它会被服务的代理使用
+3. `Service` selector的控制器将会持续扫描符合条件的`Pod`，扫描结果会更新到名称为`my-service`的`Endpoints`对象上
+
+**因此要特别注意以下几点**
+
+1. **service通过selector和pod建立关联。**
+2. **k8s会根据service关联到pod的podIP信息组合成一个endpoint。**
+3. **若service定义中没有selector字段，service被创建时，endpoint controller不会自动创建endpoint。**
+
+##### 不含selector
+
+​	如果是不含有sselector的service，就不会创建相关的 `Endpoints` 对象，因此你可以手动定义Endpoints，将 `Service` 映射到指定的 `Endpoints`中。
+
+#### 负载均衡策略
+
+- RoundRobin：轮询模式，即轮询将请求转发到后端的各个pod上（默认模式）；
+- SessionAffinity：基于客户端IP地址进行会话保持的模式，第一次客户端访问后端某个pod，之后的请求都转发到这个pod上。
+
+#### Service发现方式
+
+​	service虽然解决了Pod的服务发现问题，但是怎么发现service服务？方式有2种
+
+- 环境变量
+
+- DNS
 
 #### 服务类型
 
@@ -85,3 +114,5 @@
 ​	**注意：** ipvs模式假定在运行kube-proxy之前在节点上都已经安装了IPVS内核模块。当kube-proxy以ipvs代理模式启动时，kube-proxy将验证节点上是否安装了IPVS模块，如果未安装，则kube-proxy将回退到iptables代理模式。
 
 ![](IPVS代理模式.png)
+
+
