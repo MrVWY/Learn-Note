@@ -7,3 +7,8 @@
 - [Grpc](https://github.com/MrVWY/Learn-Note/tree/main/Grpc)
 - [锁](https://github.com/MrVWY/Learn-Note/tree/main/lock)
 - [Mysql](https://github.com/MrVWY/Learn-Note/tree/main/database)
+- [PostgreSQL](https://github.com/MrVWY/Learn-Note/tree/main/database)
+- [Etcd](https://github.com/MrVWY/Learn-Note/tree/main/etcd)
+- [Kafka](https://github.com/MrVWY/Learn-Note/tree/main/kafka)
+- [Linux](https://github.com/MrVWY/Learn-Note/tree/main/linux)
+- [Docker](https://github.com/MrVWY/Learn-Note/tree/main/docker)
