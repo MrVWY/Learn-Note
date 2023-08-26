@@ -1,10 +1,10 @@
 package main
 
 import (
+	pb "Learn-Note/Grpc/example/proto/Hello"
 	"fmt"
 	"net"
 
-	pb "Learn-Note/Grpc/example/proto/Hello" // 引入编译生成的包
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"

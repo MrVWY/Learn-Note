@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "Learn-Note/Grpc/example/proto/Hello" // 引入proto包
+	pb "Learn-Note/Grpc/example/proto/Hello"
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"

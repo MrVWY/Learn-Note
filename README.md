@@ -1,4 +1,4 @@
-# Learn-Note
+# 学习笔记
 整理一下以前和现在的学习笔记......
 - [go-泛型](https://github.com/MrVWY/Learn-Note/tree/main/go-generics)
 - [K8s](https://github.com/MrVWY/Learn-Note/tree/main/k8s)
