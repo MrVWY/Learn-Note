@@ -30,6 +30,7 @@
 
 ## 代码
 ```go
+//分治
 func mergeTwoLists(list1, list2 *ListNode) *ListNode {
     dummy := &ListNode{} // 用哨兵节点简化代码逻辑
     cur := dummy         // cur 指向新链表的末尾
