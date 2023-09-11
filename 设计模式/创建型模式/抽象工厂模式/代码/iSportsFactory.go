@@ -2,6 +2,8 @@ package 代码
 
 import "fmt"
 
+//抽象工厂接口
+
 type ISportsFactory interface {
 	makeShoe() IShoe
 	makeShirt() IShirt
