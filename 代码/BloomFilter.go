@@ -10,7 +10,7 @@ import (
 
 type BloomFilter struct {
 	bitset    *bitset.BitSet
-	size      uint
+	size      uint //位数组的大小
 	hashFuncs []hash.Hash64
 }
 
