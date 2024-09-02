@@ -14,11 +14,15 @@ type BloomFilter struct {
 	hashFuncs []hash.Hash64
 }
 
-// 创建一个新的布隆过滤器
-func NewBloomFilter(size uint, hashCount int) *BloomFilter {
-	hashFuncs := make([]hash.Hash64, hashCount)
-	for i := 0; i < hashCount; i++ {
-		hashFuncs[i] = murmur3.New64()
+// 创建一个新的布隆过滤器，使用多种不同的哈希函数，以尽可能减少误判率
+// 使用相同的哈希函数并通过种子（seed）来引入不同的哈希值也是可
+func NewBloomFilter(size uint) *BloomFilter {
+	// 创建不同的哈希函数
+	hashFuncs := []func(data []byte) uint64{
+		func(data []byte) uint64 { return uint64(fnv.New64().Sum64()) },               // FNV
+		func(data []byte) uint64 { return uint64(crc32.ChecksumIEEE(data)) },          // CRC32
+		func(data []byte) uint64 { return murmur3.New64().Sum64() },                   // Murmur3
+		func(data []byte) uint64 { h := murmur3.New64WithSeed(12345); h.Write(data); return h.Sum64() }, // Murmur3 with seed
 	}
 
 	return &BloomFilter{
