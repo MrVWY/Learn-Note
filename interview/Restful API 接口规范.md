@@ -41,12 +41,12 @@ JSON：RESTful API 通常使用 JSON 作为数据格式，原因是它易于解�
 XML：在某些场景下，也可能支持 XML，但 JSON 是首选。
 
 6. 请求与响应  
-请求：
+  请求：
   路径参数：通过 URI 的占位符提供资源标识，例如 GET /users/{id}。
   查询参数：用于过滤、分页、排序等操作，例如 GET /users?page=2&limit=10&sort=desc。
   请求体：POST、PUT、PATCH 操作中包含的请求体，通常是 JSON 格式，用于传递资源的详细信息。
 
-响应：
+  响应：
   响应应包括状态码、响应头和响应体（如果有的话）。
   响应体：一般为 JSON 格式，返回数据和相关信息。包括成功结果、错误信息或验证失败的消息。
   
@@ -56,10 +56,9 @@ XML：在某些场景下，也可能支持 XML，但 JSON 是首选。
   Header 版本控制：通过 HTTP 请求头的 Accept 字段进行版本控制，例如 Accept: application/vnd.myapp.v1+json。
 
 7. 错误处理  
-错误处理应统一、明确，便于客户端理解并采取适当的行动：
+  错误处理应统一、明确，便于客户端理解并采取适当的行动：
 
-标准化错误响应：通常使用 JSON 格式返回错误消息，结构应包含错误代码、错误消息以及相关的详细信息。
-json
+  标准化错误响应：通常使用 JSON 格式返回错误消息，结构应包含错误代码、错误消息以及相关的详细信息。
 ```
 {
   "error": {
@@ -82,7 +81,6 @@ json
 12. HATEOAS（Hypermedia as the Engine of Application State）  
   HATEOAS 是 RESTful 的高级概念，API 响应中应该包含资源的相关链接，客户端可以通过这些链接导航到其他相关的资源。
 例如：
-json
 ```
 {
   "id": 1,
