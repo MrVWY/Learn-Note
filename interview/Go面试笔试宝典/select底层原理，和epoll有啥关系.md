@@ -9,9 +9,9 @@
 底层实现：  
   1. 在 Go 中，select 并不是直接调用操作系统提供的多路复用系统调用（如 epoll、select 等），而是通过 Go 自己的调度器（Goroutine Scheduler）来完成。
   2. Go 的调度器基于 Goroutine，它们是轻量级线程，由 Go 运行时管理。Go 的调度器使用了 M 的调度模型，也就是说，N 个 Goroutine 会由 M 个 OS 线程来运行。
-  3. 当 select 语句运行时，Go 的运行时会检查所有与该 select 相关的 channel 的状态。如果有一个或多个 channel 已经准备好（有数据或准备接收数据），Go 会随机选择其中一个执行。否则，Goroutine 将被挂起，直到有一个 channel 准备好时被唤醒。
-同步机制：
+  3. 当 select 语句运行时，Go 的运行时会检查所有与该 select 相关的 channel 的状态。如果有一个或多个 channel 已经准备好（有数据或准备接收数据），Go 会随机选择其中一个执行。否则，Goroutine 将被挂起，直到有一个 channel 准备好时被唤醒。  
 
+同步机制：
   Go 使用了一种基于协作式调度的模型。当多个 channel 涉及到 select 时，每个 channel 都会被封装为一个等待列表（wait queue），Goroutine 被添加到这些等待列表中。
 当某个 channel 准备好发送或接收数据时，等待队列中的 Goroutine 会被唤醒，并执行相应的操作。这种机制本质上是一种信号传递机制，而不是底层的系统调用。
 
