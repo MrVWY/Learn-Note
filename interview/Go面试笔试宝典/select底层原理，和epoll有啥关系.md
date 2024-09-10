@@ -34,3 +34,6 @@ Go 的 select 则是针对 Goroutine 和 channel 的并发通信进行调度，�
 Go 的 select 用于在多个 channel 之间进行多路复用，并通过 Go 运行时的调度器来管理 Goroutine 的执行，而不直接依赖操作系统的多路复用系统调用。
 在处理网络 I/O 时，Go 运行时会利用 epoll（在 Linux 上）等底层系统调用来实现非阻塞 I/O，但这主要是为了管理底层的网络事件。
 select 的核心是 Goroutine 和 channel 的调度机制，而 epoll 则是底层操作系统的事件通知机制，它们关注的层次不同。
+
+
+## 讲解：https://draveness.me/golang/docs/part2-foundation/ch05-keyword/golang-select/
