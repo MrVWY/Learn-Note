@@ -56,44 +56,45 @@ func AcquireLock(client *mongo.Client, key, holder string, ttl time.Duration) (b
 	expiration := now.Add(ttl)
 
 	// Step 1: 查找现有的锁，并检查是否已过期
-    filter := bson.M{"_id": lockKey}
-    
-    var existingLock struct {
-        Holder     string    `bson:"holder"`
-        Expiration time.Time `bson:"expiration"`
-    }
+	filter := bson.M{"_id": key}
 
-    err := collection.FindOne(context.TODO(), filter).Decode(&existingLock)
+	var existingLock struct {
+		Holder     string    `bson:"holder"`
+		Expiration time.Time `bson:"expiration"`
+	}
 
-    if err != nil && err != mongo.ErrNoDocuments {
-        // 如果查找出现其他错误，返回错误
-        return false, err
-    }
+	err := collection.FindOne(context.TODO(), filter).Decode(&existingLock)
 
-    // Step 2: 如果锁存在且未过期，返回失败，说明锁已经被占用
-    if err == nil && existingLock.Expiration.After(now) {
-        fmt.Println("Lock already held by:", existingLock.Holder)
-        return false, nil
-    }
+	if err != nil && err != mongo.ErrNoDocuments {
+		// 如果查找出现其他错误，返回错误
+		return false, err
+	}
 
-    // Step 3: 如果锁不存在或者锁已经过期，更新/插入新的锁
-    update := bson.M{
-        "$set": bson.M{
-            "holder":     holder,
-            "expiration": expiration,
-        },
-    }
+	// Step 2: 如果锁存在且未过期，返回失败，说明锁已经被占用
+	if err == nil && existingLock.Expiration.After(now) {
+		fmt.Println("Lock already held by:", existingLock.Holder)
+		return false, nil
+	}
 
-    opts := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
+	// Step 3: 如果锁不存在或者锁已经过期，更新/插入新的锁
+	update := bson.M{
+		"$set": bson.M{
+			"holder":     holder,
+			"expiration": expiration,
+		},
+	}
 
-    var result bson.M
-    err = collection.FindOneAndUpdate(context.TODO(), filter, update, opts).Decode(&result)
-    if err != nil {
-        return false, err
-    }
+	opts := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
 
-    return true, nil
+	var result bson.M
+	err = collection.FindOneAndUpdate(context.TODO(), filter, update, opts).Decode(&result)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
+
 
 func ReleaseLock(client *mongo.Client, key, holder string) error {
 	collection := client.Database("locks_db").Collection("locks")
