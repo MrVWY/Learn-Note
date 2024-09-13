@@ -70,11 +70,11 @@ func AcquireLock(client *mongo.Client, key, holder string, ttl time.Duration) (b
 		},
 	}
 
-	opts := options.FindOneAndUpdate().SetUpsert(true)
+	opts := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
 
 	var result Lock
 	err := collection.FindOneAndUpdate(context.TODO(), filter, update, opts).Decode(&result)
-	if err != nil {
+	if err != nil && err != mongo.ErrNoDocuments {
 		return false, err
 	}
 
