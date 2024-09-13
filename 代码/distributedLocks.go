@@ -55,30 +55,44 @@ func AcquireLock(client *mongo.Client, key, holder string, ttl time.Duration) (b
 	now := time.Now()
 	expiration := now.Add(ttl)
 
-	filter := bson.M{
-		"_id": key,
-		"$or": bson.A{
-			bson.M{"expiration": bson.M{"$lte": now}},
-			bson.M{"holder": holder},
-		},
-	}
+	// Step 1: 查找现有的锁，并检查是否已过期
+    filter := bson.M{"_id": lockKey}
+    
+    var existingLock struct {
+        Holder     string    `bson:"holder"`
+        Expiration time.Time `bson:"expiration"`
+    }
 
-	update := bson.M{
-		"$set": bson.M{
-			"holder":     holder,
-			"expiration": expiration,
-		},
-	}
+    err := collection.FindOne(context.TODO(), filter).Decode(&existingLock)
 
-	opts := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
+    if err != nil && err != mongo.ErrNoDocuments {
+        // 如果查找出现其他错误，返回错误
+        return false, err
+    }
 
-	var result Lock
-	err := collection.FindOneAndUpdate(context.TODO(), filter, update, opts).Decode(&result)
-	if err != nil && err != mongo.ErrNoDocuments {
-		return false, err
-	}
+    // Step 2: 如果锁存在且未过期，返回失败，说明锁已经被占用
+    if err == nil && existingLock.Expiration.After(now) {
+        fmt.Println("Lock already held by:", existingLock.Holder)
+        return false, nil
+    }
 
-	return true, nil
+    // Step 3: 如果锁不存在或者锁已经过期，更新/插入新的锁
+    update := bson.M{
+        "$set": bson.M{
+            "holder":     holder,
+            "expiration": expiration,
+        },
+    }
+
+    opts := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
+
+    var result bson.M
+    err = collection.FindOneAndUpdate(context.TODO(), filter, update, opts).Decode(&result)
+    if err != nil {
+        return false, err
+    }
+
+    return true, nil
 }
 
 func ReleaseLock(client *mongo.Client, key, holder string) error {
