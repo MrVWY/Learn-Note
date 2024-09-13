@@ -1,3 +1,19 @@
+/* 
+在 MongoDB 中，_id 字段并不是自增的，也没有固定的生成方式。实际上，_id 是文档的唯一标识符，默认情况下 MongoDB 会为其分配一个唯一的 ObjectId，但你也可以使用自定义的值（如字符串、数字、UUID 等）来代替默认的 ObjectId。
+
+因此，将 lockKey 设置为 _id 字段是合理的做法。如果锁的键是唯一的，使用 lockKey 作为 _id 可以确保锁的唯一性，MongoDB 会自动利用 _id 的唯一性约束，确保同一个锁不能被重复创建。
+
+
+在 Go 语言中，<-ctx.Done() 是一种常见的模式，用于监听上下文 (context.Context) 的取消信号。
+
+解释 <-ctx.Done()
+ctx.Done() 是一个返回只读 channel 的方法，该 channel 会在以下情况下关闭：
+
+上下文被取消：通过调用 cancel() 函数（例如使用 context.WithCancel 创建的上下文）。
+上下文的超时：如果上下文是通过 context.WithTimeout 或 context.WithDeadline 创建的，当超时或到达指定的时间时，该 channel 会关闭。
+一旦 ctx.Done() 返回的 channel 关闭，监听它的 goroutine 就会从该 channel 读取到一个值，这意味着该操作应该终止或做相应的清理。
+
+*/
 package main
 
 import (
